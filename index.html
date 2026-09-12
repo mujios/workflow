@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ERPNext — Complete Business Process Flowchart</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0F172A;
+    --bg-alt: #1E293B;
+    --card: #FFFFFF;
+    --text: #0F172A;
+    --text-muted: #475569;
+    --border: #E2E8F0;
+    --accent: #2563EB;
+    --accent-2: #7C3AED;
+    --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    --radius: 14px;
+    --font: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', Arial, sans-serif;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0B1220;
+    --bg-alt: #0F172A;
+    --card: #111827;
+    --text: #E5E7EB;
+    --text-muted: #94A3B8;
+    --border: #1F2937;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font);
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /* ---------- HEADER ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  [data-theme="dark"] header {
+    background: rgba(17, 24, 39, 0.85);
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  header h1 .badge {
+    background: linear-gradient(135deg, #2563EB, #7C3AED);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  button.ctrl {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  button.ctrl:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1800px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static !important; }
+  }
+
+  /* ---------- SIDEBAR ---------- */
+  aside {
+    position: sticky;
+    top: 90px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  aside h2 {
+    margin: 0 0 14px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 4px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .legend-item:hover { background: rgba(37, 99, 235, 0.08); }
+
+  .swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    border: 2px solid rgba(0,0,0,0.08);
+  }
+
+  aside hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  .tip {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .tip kbd {
+    background: var(--bg-alt);
+    color: var(--text);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: monospace;
+    border: 1px solid var(--border);
+  }
+
+  /* ---------- MAIN CARD ---------- */
+  main {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-head {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .card-head h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .card-head p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  #diagram-wrap {
+    padding: 24px;
+    overflow: auto;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(37, 99, 235, 0.05), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(124, 58, 237, 0.05), transparent 40%),
+      var(--card);
+    max-height: calc(100vh - 200px);
+    cursor: grab;
+  }
+
+  #diagram-wrap.grabbing { cursor: grabbing; }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+    min-width: max-content;
+  }
+
+  /* Zoom container */
+  #zoom-stage {
+    transform-origin: top left;
+    transition: transform 0.15s ease-out;
+    display: inline-block;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    🧭 ERPNext Business Process
+    <span class="badge">Order → Cash · Procure → Pay · Plan → Produce</span>
+  </h1>
+  <div class="header-actions">
+    <button class="ctrl" id="zoomOut" title="Zoom out">− Zoom</button>
+    <button class="ctrl" id="zoomReset" title="Reset zoom">⟲ Reset</button>
+    <button class="ctrl" id="zoomIn" title="Zoom in">+ Zoom</button>
+    <button class="ctrl" id="themeToggle" title="Toggle theme">🌙 Theme</button>
+    <button class="ctrl" id="downloadBtn" title="Download SVG">⬇ SVG</button>
+    <button class="ctrl" id="printBtn" title="Print">🖨 Print</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ================= SIDEBAR LEGEND ================= -->
+  <aside>
+    <h2>Legend — Modules</h2>
+
+    <div class="legend-item"><span class="swatch" style="background:#E0F2FE;border-color:#0284C7"></span>Master Data</div>
+    <div class="legend-item"><span class="swatch" style="background:#DCFCE7;border-color:#16A34A"></span>Sales — Order to Cash</div>
+    <div class="legend-item"><span class="swatch" style="background:#DBEAFE;border-color:#2563EB"></span>Purchase — Procure to Pay</div>
+    <div class="legend-item"><span class="swatch" style="background:#FFEDD5;border-color:#EA580C"></span>Stock & Inventory</div>
+    <div class="legend-item"><span class="swatch" style="background:#F3E8FF;border-color:#9333EA"></span>Accounting & Finance</div>
+    <div class="legend-item"><span class="swatch" style="background:#FEE2E2;border-color:#DC2626"></span>Manufacturing</div>
+    <div class="legend-item"><span class="swatch" style="background:#FEF3C7;border-color:#D97706"></span>HR & Payroll</div>
+    <div class="legend-item"><span class="swatch" style="background:#F1F5F9;border-color:#475569"></span>Validation & Approval</div>
+    <div class="legend-item"><span class="swatch" style="background:#EDE9FE;border-color:#7C3AED"></span>Reporting</div>
+    <div class="legend-item"><span class="swatch" style="background:#E2E8F0;border-color:#475569"></span>System Layer</div>
+    <div class="legend-item"><span class="swatch" style="background:#FEF9C3;border-color:#CA8A04"></span>Decision Point</div>
+    <div class="legend-item"><span class="swatch" style="background:#0F172A;border-color:#0F172A"></span>Start / End</div>
+
+    <hr />
+
+    <h2>Tips</h2>
+    <p class="tip">
+      🖱 <b>Drag</b> the diagram area to pan.<br/>
+      🔍 Use <kbd>+</kbd> / <kbd>−</kbd> buttons or <kbd>Ctrl</kbd> + scroll to zoom.<br/>
+      🌓 Toggle <b>dark mode</b> for presentations.<br/>
+      🖨 Export to PDF with the <b>Print</b> button.<br/>
+      ⬇ Download as <b>SVG</b> for docs or slides.
+    </p>
+  </aside>
+
+  <!-- ================= MAIN DIAGRAM ================= -->
+  <main>
+    <div class="card-head">
+      <div>
+        <h2>Complete Process Flow</h2>
+        <p>Master Data → Business Modules → Validation → Reporting → Completion</p>
+      </div>
+    </div>
+    <div id="diagram-wrap">
+      <div id="zoom-stage">
+        <div class="mermaid" id="mermaid-source">
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "fontSize": "16px",
+    "fontFamily": "Segoe UI, Arial, sans-serif",
+    "lineColor": "#64748B",
+    "primaryTextColor": "#0F172A",
+    "clusterBkg": "#F8FAFC",
+    "clusterBorder": "#94A3B8"
+  },
+  "flowchart": {
+    "curve": "basis",
+    "nodeSpacing": 45,
+    "rankSpacing": 60,
+    "padding": 12,
+    "htmlLabels": true
+  }
+}}%%
+flowchart TD
+
+    START(["🚀 BUSINESS START"])
+
+    subgraph MASTER["🧩 1. MASTER DATA & CONFIGURATION"]
+        direction TB
+        COMPANY["🏢 Company<br/><small>Legal entity, fiscal year,<br/>currency, default accounts</small>"]
+        PARTY["👤 Customer / Supplier<br/><small>Partners, contacts,<br/>credit limits</small>"]
+        ITEM["📦 Item Master<br/><small>Products, UOM, taxes,<br/>valuation settings</small>"]
+        WAREHOUSE["🏭 Warehouse<br/><small>Inventory locations<br/>& ownership</small>"]
+        PRICE["💰 Price List<br/><small>Buying / selling prices<br/>& rules</small>"]
+        COMPANY --> PARTY --> ITEM --> WAREHOUSE --> PRICE
+    end
+
+    START --> COMPANY
+    PRICE --> REQUEST
+
+    REQUEST{"🔀 BUSINESS<br/>REQUIREMENT"}
+
+    REQUEST -->|🟢 Sell| SALES_START
+    REQUEST -->|🔵 Buy| PURCHASE_START
+    REQUEST -->|🟠 Stock| STOCK_START
+    REQUEST -->|🟣 Accounting| ACCOUNT_START
+    REQUEST -->|🔴 Manufacturing| MANUFACTURING_START
+    REQUEST -->|🟡 HR / Payroll| HR_START
+
+    subgraph SALES["🟢 2. SALES — ORDER TO CASH"]
+        direction TB
+        SALES_START(["🛒 Sales Requirement"])
+        QUOTATION["📄 Quotation"]
+        QUOTE_DECISION{"Customer<br/>accepts?"}
+        QUOTE_CLOSE["❌ Closed / Expired"]
+        SALES_ORDER["📋 Sales Order"]
+        STOCK_CHECK{"📦 Stock<br/>available?"}
+        REPLENISH["🔄 Replenish Stock<br/><small>Purchase or Manufacture</small>"]
+        DELIVERY["🚚 Delivery Note"]
+        SALE_STOCK["📊 Stock Ledger<br/><small>Qty & valuation updated</small>"]
+        SALES_INVOICE["🧾 Sales Invoice"]
+        SALE_GL["💳 GL Entry<br/><small>Dr Receivable / Cr Sales+Tax</small>"]
+        PAYMENT_CHECK{"💵 Customer<br/>paid?"}
+        AR["📌 Accounts Receivable"]
+        SALE_PAYMENT["💰 Payment Entry"]
+        CUSTOMER_BALANCE["👤 Customer Balance<br/>Updated"]
+
+        SALES_START --> QUOTATION --> QUOTE_DECISION
+        QUOTE_DECISION -->|No| QUOTE_CLOSE
+        QUOTE_DECISION -->|Yes| SALES_ORDER
+        SALES_ORDER --> STOCK_CHECK
+        STOCK_CHECK -->|Yes| DELIVERY
+        STOCK_CHECK -->|No| REPLENISH --> DELIVERY
+        DELIVERY --> SALE_STOCK --> SALES_INVOICE
+        SALES_INVOICE --> SALE_GL
+        SALES_INVOICE --> PAYMENT_CHECK
+        PAYMENT_CHECK -->|Yes| SALE_PAYMENT
+        PAYMENT_CHECK -->|No| AR
+        SALE_PAYMENT --> CUSTOMER_BALANCE
+        AR --> CUSTOMER_BALANCE
+    end
+
+    subgraph PURCHASE["🔵 3. PURCHASE — PROCURE TO PAY"]
+        direction TB
+        PURCHASE_START(["🛍️ Purchase Requirement"])
+        MATERIAL_REQUEST["📋 Material Request"]
+        RFQ["📨 Request for Quotation"]
+        SUPPLIER_QUOTATION["💬 Supplier Quotation"]
+        PURCHASE_ORDER["📑 Purchase Order"]
+        PURCHASE_RECEIPT["📦 Purchase Receipt"]
+        PURCHASE_STOCK["📊 Stock Ledger<br/><small>Qty & valuation updated</small>"]
+        PURCHASE_INVOICE["🧾 Purchase Invoice"]
+        PURCHASE_GL["💳 GL Entry<br/><small>Dr Expense/Asset / Cr Payable</small>"]
+        SUPPLIER_PAYMENT_CHECK{"💵 Supplier<br/>paid?"}
+        AP["📌 Accounts Payable"]
+        SUPPLIER_PAYMENT["💰 Payment Entry"]
+        SUPPLIER_BALANCE["👤 Supplier Balance<br/>Updated"]
+
+        PURCHASE_START --> MATERIAL_REQUEST --> RFQ --> SUPPLIER_QUOTATION
+        SUPPLIER_QUOTATION --> PURCHASE_ORDER --> PURCHASE_RECEIPT
+        PURCHASE_RECEIPT --> PURCHASE_STOCK --> PURCHASE_INVOICE
+        PURCHASE_INVOICE --> PURCHASE_GL
+        PURCHASE_INVOICE --> SUPPLIER_PAYMENT_CHECK
+        SUPPLIER_PAYMENT_CHECK -->|Yes| SUPPLIER_PAYMENT
+        SUPPLIER_PAYMENT_CHECK -->|No| AP
+        SUPPLIER_PAYMENT --> SUPPLIER_BALANCE
+        AP --> SUPPLIER_BALANCE
+    end
+
+    subgraph STOCK["🟠 4. STOCK & INVENTORY"]
+        direction TB
+        STOCK_START(["📦 Stock Operation"])
+        STOCK_TYPE{"Operation<br/>Type?"}
+        RECEIPT["📥 Material Receipt"]
+        ISSUE["📤 Material Issue"]
+        TRANSFER["🔁 Material Transfer"]
+        STOCK_MANUFACTURE["🏭 Manufacture Entry"]
+        STOCK_LEDGER["📊 Stock Ledger Entry"]
+        STOCK_QTY["📦 Warehouse Quantity"]
+        STOCK_VALUE["💰 Stock Valuation"]
+
+        STOCK_START --> STOCK_TYPE
+        STOCK_TYPE -->|Receive| RECEIPT
+        STOCK_TYPE -->|Issue| ISSUE
+        STOCK_TYPE -->|Transfer| TRANSFER
+        STOCK_TYPE -->|Manufacture| STOCK_MANUFACTURE
+        RECEIPT --> STOCK_LEDGER
+        ISSUE --> STOCK_LEDGER
+        TRANSFER --> STOCK_LEDGER
+        STOCK_MANUFACTURE --> STOCK_LEDGER
+        STOCK_LEDGER --> STOCK_QTY
+        STOCK_LEDGER --> STOCK_VALUE
+    end
+
+    subgraph ACCOUNTING["🟣 5. ACCOUNTING & FINANCE"]
+        direction TB
+        ACCOUNT_START(["💼 Accounting Requirement"])
+        ACCOUNT_TYPE{"Transaction<br/>Type?"}
+        JOURNAL["📔 Journal Entry"]
+        PAYMENT["💰 Payment Entry"]
+        ACCOUNT_SALES["🧾 Sales Invoice"]
+        ACCOUNT_PURCHASE["🧾 Purchase Invoice"]
+        GL["📚 General Ledger"]
+        RECEIVABLE_PAYABLE["👥 Receivable / Payable"]
+        TAX_ACCOUNTS["🧮 Tax Accounts"]
+        CASH_BANK["🏦 Cash / Bank"]
+        INCOME_EXPENSE["📈 Income / Expense"]
+
+        ACCOUNT_START --> ACCOUNT_TYPE
+        ACCOUNT_TYPE -->|Adjustment| JOURNAL
+        ACCOUNT_TYPE -->|Payment| PAYMENT
+        ACCOUNT_TYPE -->|Sales| ACCOUNT_SALES
+        ACCOUNT_TYPE -->|Purchase| ACCOUNT_PURCHASE
+        JOURNAL --> GL
+        PAYMENT --> GL
+        ACCOUNT_SALES --> GL
+        ACCOUNT_PURCHASE --> GL
+        GL --> RECEIVABLE_PAYABLE
+        GL --> TAX_ACCOUNTS
+        GL --> CASH_BANK
+        GL --> INCOME_EXPENSE
+    end
+
+    subgraph MANUFACTURING["🔴 6. MANUFACTURING — PLAN TO PRODUCE"]
+        direction TB
+        MANUFACTURING_START(["🏭 Manufacturing Requirement"])
+        BOM["📋 Bill of Materials"]
+        WORK_ORDER["📝 Work Order"]
+        RAW_CHECK{"Raw materials<br/>available?"}
+        RAW_PURCHASE["🛒 Purchase / Replenishment"]
+        CONSUMPTION["📤 Material Consumption"]
+        PRODUCTION["⚙️ Production"]
+        FINISHED["📦 Finished Goods"]
+        MANUFACTURING_STOCK["📊 Stock + Valuation"]
+
+        MANUFACTURING_START --> BOM --> WORK_ORDER --> RAW_CHECK
+        RAW_CHECK -->|No| RAW_PURCHASE --> CONSUMPTION
+        RAW_CHECK -->|Yes| CONSUMPTION
+        CONSUMPTION --> PRODUCTION --> FINISHED --> MANUFACTURING_STOCK
+    end
+
+    subgraph HR["🟡 7. HR & PAYROLL"]
+        direction TB
+        HR_START(["👥 Employee Management"])
+        EMPLOYEE["👤 Employee"]
+        ATTENDANCE["🕘 Attendance"]
+        LEAVE["🏖️ Leave Application"]
+        PAYROLL["💵 Payroll Entry"]
+        SALARY_SLIP["📄 Salary Slip"]
+        PAYROLL_GL["📚 Payroll GL"]
+
+        HR_START --> EMPLOYEE
+        EMPLOYEE --> ATTENDANCE
+        EMPLOYEE --> LEAVE
+        ATTENDANCE --> PAYROLL
+        LEAVE --> PAYROLL
+        PAYROLL --> SALARY_SLIP --> PAYROLL_GL
+    end
+
+    subgraph CONTROL["🛡️ 8. VALIDATION, PERMISSION & APPROVAL"]
+        direction TB
+        DRAFT["📝 Document Created"]
+        VALIDATE{"Validation<br/>passed?"}
+        ERROR["⚠️ Validation Error"]
+        CORRECT["✏️ Correct Document"]
+        APPROVAL_CHECK{"Approval<br/>required?"}
+        APPROVER["👨‍💼 Approver Review"]
+        APPROVAL_DECISION{"Approved?"}
+        REJECT["❌ Rejected"]
+        SUBMIT["✅ Submit"]
+
+        DRAFT --> VALIDATE
+        VALIDATE -->|No| ERROR --> CORRECT --> VALIDATE
+        VALIDATE -->|Yes| APPROVAL_CHECK
+        APPROVAL_CHECK -->|No| SUBMIT
+        APPROVAL_CHECK -->|Yes| APPROVER --> APPROVAL_DECISION
+        APPROVAL_DECISION -->|No| REJECT
+        APPROVAL_DECISION -->|Yes| SUBMIT
+    end
+
+    subgraph REPORTING["📊 9. REPORTING & MANAGEMENT"]
+        direction TB
+        REPORT_START["📑 Submitted Transactions"]
+        SALES_REPORT["📈 Sales Reports"]
+        PURCHASE_REPORT["📉 Purchase Reports"]
+        STOCK_REPORT["📦 Stock Reports"]
+        ACCOUNT_REPORT["💼 Accounting Reports"]
+        PL["📊 Profit & Loss"]
+        BALANCE["⚖️ Balance Sheet"]
+        CASHFLOW["💵 Cash Flow"]
+        STOCK_BALANCE["📦 Stock Balance"]
+        STOCK_LEDGER_REPORT["📚 Stock Ledger Report"]
+
+        REPORT_START --> SALES_REPORT
+        REPORT_START --> PURCHASE_REPORT
+        REPORT_START --> STOCK_REPORT
+        REPORT_START --> ACCOUNT_REPORT
+        ACCOUNT_REPORT --> PL
+        ACCOUNT_REPORT --> BALANCE
+        ACCOUNT_REPORT --> CASHFLOW
+        STOCK_REPORT --> STOCK_BALANCE
+        STOCK_REPORT --> STOCK_LEDGER_REPORT
+    end
+
+    subgraph SYSTEM["⚙️ 10. ERPNEXT SYSTEM LAYER"]
+        direction LR
+        DOCTYPES["🗂️ DocTypes"]
+        PERMISSIONS["🔐 Roles & Permissions"]
+        WORKFLOW["🔄 Workflow"]
+        NOTIFICATIONS["🔔 Notifications"]
+    end
+
+    SALES --> REPORTING
+    PURCHASE --> REPORTING
+    STOCK --> REPORTING
+    ACCOUNTING --> REPORTING
+    MANUFACTURING --> REPORTING
+    HR --> REPORTING
+
+    SUBMIT --> REPORT_START
+
+    DOCTYPES -.-> SALES
+    DOCTYPES -.-> PURCHASE
+    DOCTYPES -.-> STOCK
+    DOCTYPES -.-> ACCOUNTING
+    DOCTYPES -.-> MANUFACTURING
+    DOCTYPES -.-> HR
+
+    PERMISSIONS -.-> VALIDATE
+    WORKFLOW -.-> APPROVAL_CHECK
+    NOTIFICATIONS -.-> APPROVER
+
+    REPORTING --> DONE(["🎯 BUSINESS PROCESS COMPLETED"])
+
+    classDef startEnd fill:#0F172A,stroke:#0F172A,color:#FFFFFF,stroke-width:3px,font-size:18px,font-weight:bold;
+    classDef master fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:2px;
+    classDef sales fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:2px;
+    classDef purchase fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A,stroke-width:2px;
+    classDef stock fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:2px;
+    classDef accounting fill:#F3E8FF,stroke:#9333EA,color:#581C87,stroke-width:2px;
+    classDef manufacturing fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D,stroke-width:2px;
+    classDef hr fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:2px;
+    classDef control fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:2px;
+    classDef decision fill:#FEF9C3,stroke:#CA8A04,color:#713F12,stroke-width:3px,font-weight:bold;
+    classDef report fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:2px;
+    classDef system fill:#E2E8F0,stroke:#475569,color:#1E293B,stroke-width:2px;
+    classDef error fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D,stroke-width:2px,font-weight:bold;
+
+    class START,DONE startEnd;
+    class COMPANY,PARTY,ITEM,WAREHOUSE,PRICE master;
+    class SALES_START,QUOTATION,QUOTE_CLOSE,SALES_ORDER,DELIVERY,SALE_STOCK,SALES_INVOICE,SALE_GL,SALE_PAYMENT,AR,CUSTOMER_BALANCE sales;
+    class PURCHASE_START,MATERIAL_REQUEST,RFQ,SUPPLIER_QUOTATION,PURCHASE_ORDER,PURCHASE_RECEIPT,PURCHASE_STOCK,PURCHASE_INVOICE,PURCHASE_GL,SUPPLIER_PAYMENT,AP,SUPPLIER_BALANCE purchase;
+    class STOCK_START,RECEIPT,ISSUE,TRANSFER,STOCK_MANUFACTURE,STOCK_LEDGER,STOCK_QTY,STOCK_VALUE stock;
+    class ACCOUNT_START,JOURNAL,PAYMENT,ACCOUNT_SALES,ACCOUNT_PURCHASE,GL,RECEIVABLE_PAYABLE,TAX_ACCOUNTS,CASH_BANK,INCOME_EXPENSE accounting;
+    class MANUFACTURING_START,BOM,WORK_ORDER,RAW_PURCHASE,CONSUMPTION,PRODUCTION,FINISHED,MANUFACTURING_STOCK manufacturing;
+    class HR_START,EMPLOYEE,ATTENDANCE,LEAVE,PAYROLL,SALARY_SLIP,PAYROLL_GL hr;
+    class DRAFT,CORRECT,SUBMIT,APPROVER control;
+    class ERROR,REJECT error;
+    class SALES_REPORT,PURCHASE_REPORT,STOCK_REPORT,ACCOUNT_REPORT,PL,BALANCE,CASHFLOW,STOCK_BALANCE,STOCK_LEDGER_REPORT report;
+    class DOCTYPES,PERMISSIONS,WORKFLOW,NOTIFICATIONS system;
+    class REQUEST,QUOTE_DECISION,STOCK_CHECK,PAYMENT_CHECK,SUPPLIER_PAYMENT_CHECK,STOCK_TYPE,ACCOUNT_TYPE,RAW_CHECK,VALIDATE,APPROVAL_CHECK,APPROVAL_DECISION decision;
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  Built with Mermaid.js · ERPNext Business Process Reference · © 2025
+</footer>
+
+<script>
+/* ============ MERMAID INIT ============ */
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { htmlLabels: true, useMaxWidth: false }
+});
+
+/* ============ ZOOM / PAN ============ */
+const stage = document.getElementById('zoom-stage');
+const wrap  = document.getElementById('diagram-wrap');
+let scale = 1;
+let isPanning = false;
+let startX, startY, scrollLeftStart, scrollTopStart;
+
+function applyScale() {
+  stage.style.transform = `scale(${scale})`;
+}
+
+document.getElementById('zoomIn').addEventListener('click', () => {
+  scale = Math.min(scale + 0.15, 3);
+  applyScale();
+});
+document.getElementById('zoomOut').addEventListener('click', () => {
+  scale = Math.max(scale - 0.15, 0.3);
+  applyScale();
+});
+document.getElementById('zoomReset').addEventListener('click', () => {
+  scale = 1;
+  applyScale();
+  wrap.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+});
+
+/* Ctrl + wheel zoom */
+wrap.addEventListener('wheel', (e) => {
+  if (!e.ctrlKey) return;
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  scale = Math.max(0.3, Math.min(3, scale + delta));
+  applyScale();
+}, { passive: false });
+
+/* Drag to pan */
+wrap.addEventListener('mousedown', (e) => {
+  isPanning = true;
+  wrap.classList.add('grabbing');
+  startX = e.pageX;
+  startY = e.pageY;
+  scrollLeftStart = wrap.scrollLeft;
+  scrollTopStart  = wrap.scrollTop;
+});
+wrap.addEventListener('mouseleave', () => { isPanning = false; wrap.classList.remove('grabbing'); });
+wrap.addEventListener('mouseup',    () => { isPanning = false; wrap.classList.remove('grabbing'); });
+wrap.addEventListener('mousemove', (e) => {
+  if (!isPanning) return;
+  e.preventDefault();
+  wrap.scrollLeft = scrollLeftStart - (e.pageX - startX);
+  wrap.scrollTop  = scrollTopStart  - (e.pageY - startY);
+});
+
+/* ============ THEME TOGGLE ============ */
+const themeBtn = document.getElementById('themeToggle');
+themeBtn.addEventListener('click', () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeBtn.textContent = isDark ? '🌙 Theme' : '☀️ Theme';
+});
+
+/* ============ DOWNLOAD SVG ============ */
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const svg = document.querySelector('#diagram-wrap svg');
+  if (!svg) { alert('Diagram not yet rendered.'); return; }
+  const clone = svg.cloneNode(true);
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  const data = new XMLSerializer().serializeToString(clone);
+  const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'erpnext-business-process.svg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+/* ============ PRINT ============ */
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+/* ============ LEGEND FILTER (highlight module) ============ */
+document.querySelectorAll('.legend-item').forEach((item) => {
+  item.addEventListener('click', () => {
+    const label = item.textContent.trim();
+    // Optional: could scroll to a specific subgraph by id. Kept simple.
+    console.log('Legend clicked:', label);
+  });
+});
+</script>
+
+</body>
+</html>
