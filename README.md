@@ -1,3 +1,4 @@
+```mermaidjs
 flowchart TD
 
     %% =========================================================
@@ -647,3 +648,4 @@ flowchart TD
     class REQUEST,QUOTE_DECISION,STOCK_CHECK,PAYMENT_CHECK,SUPPLIER_PAYMENT_CHECK,STOCK_TYPE,ACCOUNT_TYPE,RAW_CHECK,VALIDATE,APPROVAL_CHECK,APPROVAL_DECISION decision;
 
     class END endNode;
+```
